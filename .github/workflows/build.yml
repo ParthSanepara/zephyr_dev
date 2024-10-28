@@ -3,20 +3,20 @@ name: Build binary
 on:
   workflow_dispatch:
     inputs:
-      ZEPHYR_SDK:
-        description: "Zephyr SDK version. Ex. 0.16.8."
+      NCS_VERSION:
+        description: "NCS SDK version. Ex. v2.6.1."
         required: true
         type: string
-        default: 0.16.8
+        default: "v2.6.1"
       BOARD:
         description: "Target board."
         required: true
         type: string
-        default: nucleo_f401re
+        default: nrf52dk_nrf52832
 
   workflow_call:
     inputs:
-      ZEPHYR_SDK:
+      NCS_VERSION:
         required: true
         type: string
       BOARD:
@@ -27,10 +27,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    container: ghcr.io/silvio-vallorani-zephyr-portfolio/zephyr_container:arm-${{ inputs.ZEPHYR_SDK }}SDK
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:${{ inputs.NCS_VERSION }}
 
     env:
-      ZEPHYR_SDK_INSTALL_DIR: /opt/toolchains/zephyr-sdk-${{ inputs.ZEPHYR_SDK }}
+      NCS_ROOT: /opt/ncs/${{ inputs.NCS_VERSION }}
 
     steps:
       - name: Setup West workspace
