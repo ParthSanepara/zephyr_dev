@@ -15,3 +15,6 @@ manifest:
       repo-path: sdk-nrf
       revision: v2.6.1
       import: true
+
+  self:
+    path: zephyr_dev

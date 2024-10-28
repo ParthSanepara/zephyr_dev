@@ -8,7 +8,7 @@ on:
       ncs_version:
         description: "NCS SDK version (e.g., v2.6.2)"
         required: true
-        default: "v2.6.2"
+        default: "v2.6.1"
         type: string
       board:
         description: "Target board (e.g., nrf52dk_nrf52832)"
@@ -20,39 +20,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.6.2
+      image: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.6.1
+defaults:
+      run:
+        # Bash shell is needed to set toolchain related environment variables in docker container
+        # It is a workaround for GitHub Actions limitation https://github.com/actions/runner/issues/1964
+        shell: bash
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up environment
+      - name: Checkout repository with BLE Beacon application
+        uses: actions/checkout@v4
+        with:
+          path: zephyr_dev
+      - name: Prepare west project       
         run: |
-          export ZEPHYR_BASE=$PWD/zephyr
-          export NRF_BASE=$PWD/nrf
-          echo "ZEPHYR_BASE=$ZEPHYR_BASE" >> $GITHUB_ENV
-          echo "NRF_BASE=$NRF_BASE" >> $GITHUB_ENV
-      
-      - name: Install Git
-        run: apt-get update && apt-get install -y git
-
-      - name: Install pip3
-        run: apt-get update && apt-get install -y python3-pip
-
-      - name: Install west
-        run: pip3 install west 
-        
-
-      - name: Update west
+          export PATH=$PATH:${HOME}/.local/bin
+          west init -l zephyr_dev
+          west update -o=--depth=1 -n
+          apt-get -y update
+          apt-get -y install build-essential
+      - name: Build firmware
         run: |
-          west init -l $NRF_BASE
-          west update
-
-      - name: Build application
-        run: |
-          west build -b nrf52dk_nrf52832 .
-
-      # - name: Archive build artifacts
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: build-artifacts-${{ inputs.ncs_version }}-${{ inputs.board }}
-      #     path: build/zephyr/bin/*
+          cd zephyr_dev
+          west build --build-dir build . --pristine -DBOARD_ROOT=. -DNCS_TOOLCHAIN_VERSION=NONE  -DCACHED_CONF_FILE=prj.conf --board nrf52dk_nrf52832
+      - name: Store hex files
+        uses: actions/upload-artifact@v4
+        with:
+          name: zephyr_dev
+          path: zephyr_dev/build/zephyr/zephyr_dev.hex
