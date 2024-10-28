@@ -1,67 +1,45 @@
-name: Build binary
+name: Build NRF Connect SDK Application
 
 on:
-  workflow_dispatch:
-    inputs:
-      NCS_VERSION:
-        description: "NCS SDK version. Ex. v2.6.1."
-        required: true
-        type: string
-        default: "v2.6.1"
-      BOARD:
-        description: "Target board."
-        required: true
-        type: string
-        default: nrf52dk_nrf52832
-
-  workflow_call:
-    inputs:
-      NCS_VERSION:
-        required: true
-        type: string
-      BOARD:
-        required: true
-        type: string
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:${{ inputs.NCS_VERSION }}
-
-    env:
-      NCS_ROOT: /opt/ncs/${{ inputs.NCS_VERSION }}
-
+    container:
+      image: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.6.2
     steps:
-      # - name: Setup West workspace
-      #   run: |
-      #     west init -m https://github.com/$GITHUB_REPOSITORY .
-      #     west update --narrow -o=--depth=1
-      #     west zephyr-export
-      #     pip3 install -r deps/zephyr/scripts/requirements-base.txt
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Build with West
+      - name: Set up environment
         run: |
-          west build -p -b ${{ inputs.BOARD }} app/
-
-      - name: Create filename prefix
-        run: echo "PREFIX=${{ github.event.repository.name }}-${{ inputs.BOARD }}" >> "$GITHUB_ENV"
-
-      - name: Generate short SHA
-        uses: benjlevesque/short-sha@v3.0
-
-      - name: Prepare artifacts
+          export ZEPHYR_BASE=$PWD/zephyr
+          export NRF_BASE=$PWD/nrf
+          echo "ZEPHYR_BASE=$ZEPHYR_BASE" >> $GITHUB_ENV
+          echo "NRF_BASE=$NRF_BASE" >> $GITHUB_ENV
+          
+      - name: Install west
         run: |
-          cd build/zephyr
-          mkdir -p artifacts
-          mv zephyr.bin ./artifacts/${{ env.PREFIX }}-${{ env.SHA }}.bin
-          mv zephyr.elf ./artifacts/${{ env.PREFIX }}-${{ env.SHA }}.elf
-          mv zephyr.hex ./artifacts/${{ env.PREFIX }}-${{ env.SHA }}.hex
+          pip install west
 
-      # Run IDs are unique per repo but are reused on re-runs
-      - name: Save artifact
-        uses: actions/upload-artifact@v4
+      - name: Update west
+        run: |
+          west init -l $NRF_BASE
+          west update
+
+      - name: Build application
+        run: |
+          west build -b nrf52dk_nrf52832 .
+
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v2
         with:
-          name: build_artifacts_${{ github.run_id }}
-          path: |
-            build/zephyr/artifacts/*
+          name: build-artifacts
+          path: build/zephyr/bin/*

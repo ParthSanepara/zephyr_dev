@@ -1,34 +1,17 @@
+# Copyright (c) 2021 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
 manifest:
+  # self:
+  #   west-commands: scripts/west-commands.yml
 
   remotes:
-    - name: sdk
+    - name: ncs
       url-base: https://github.com/nrfconnect
 
   projects:
-    - name: sdk-nrf
-      remote: sdk
+    - name: nrf
+      remote: ncs
+      repo-path: sdk-nrf
       revision: v2.6.1
-      path: nrf
-      import:
-        name-blocklist:
-          - ci-tools
-          - hal_altera
-          - hal_cypress
-          - hal_infineon
-          - hal_microchip
-          - hal_nxp
-          - hal_openisa
-          - hal_silabs
-          - hal_xtensa
-          - hal_ti
-          - loramac-node
-          - net-tools
-          - edtt
-          - trusted-firmware-m
-          - sof
-      clone-depth: 1
-      board: nrf52dk_nrf52832 # Specify your custom board
-      build-dir: build # Customize the build directory
-
-
-    
+      import: true
