@@ -32,15 +32,7 @@ jobs:
           echo "ZEPHYR_BASE=$ZEPHYR_BASE" >> $GITHUB_ENV
           echo "NRF_BASE=$NRF_BASE" >> $GITHUB_ENV
 
-      - name: Install python dependencies
-        working-directory: ncs/nrf
-        run: |
-          pip3 install -U pip
-          pip3 install -U setuptools
-          pip3 install -U wheel
-          pip3 install -U mypy types-colorama types-editdistance types-PyYAML
-          grep -E "west==" scripts/requirements-fixed.txt | cut -f1 -d"#" | cut -d ' ' -f '1'| xargs pip3 install -U
-          pip3 show -f west
+
 
       - name: Update west
         run: |
