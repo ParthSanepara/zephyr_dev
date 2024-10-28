@@ -32,12 +32,14 @@ jobs:
           echo "ZEPHYR_BASE=$ZEPHYR_BASE" >> $GITHUB_ENV
           echo "NRF_BASE=$NRF_BASE" >> $GITHUB_ENV
 
+      - name: Install west
+        run: pip3 install west 
+        
 
-
-      # - name: Update west
-      #   run: |
-      #     west init -l $NRF_BASE
-      #     west update
+      - name: Update west
+        run: |
+          west init -l $NRF_BASE
+          west update
 
       - name: Build application
         run: |
