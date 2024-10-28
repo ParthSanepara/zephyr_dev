@@ -34,10 +34,10 @@ jobs:
 
 
 
-      - name: Update west
-        run: |
-          west init -l $NRF_BASE
-          west update
+      # - name: Update west
+      #   run: |
+      #     west init -l $NRF_BASE
+      #     west update
 
       - name: Build application
         run: |
