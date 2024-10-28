@@ -1,12 +1,19 @@
 name: Build NRF Connect SDK Application
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  # ...
+  workflow_dispatch:
+    inputs:
+      ncs_version:
+        description: "NCS SDK version (e.g., v2.6.2)"
+        required: true
+        default: "v2.6.2"
+        type: string
+      board:
+        description: "Target board (e.g., nrf52dk_nrf52832)"
+        required: true
+        default: "nrf52dk_nrf52832"
+        type: string
 
 jobs:
   build:
@@ -35,11 +42,12 @@ jobs:
 
       - name: Build application
         run: |
-          west build -b nrf52dk_nrf52832 .
+          west build -b ${{ inputs.board }} . || exit 1
+
 
 
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: build-artifacts
+          name: build-artifacts-${{ inputs.ncs_version }}-${{ inputs.board }}
           path: build/zephyr/bin/*
