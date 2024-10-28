@@ -45,7 +45,7 @@
     {
       "id": "board",
       "type": "promptString",
-      "default": "nucleo_f401re",
+      "default": "nrf52dk_nrf52832",
       "description": "See https://docs.zephyrproject.org/latest/boards/index.html"
     },
     {

@@ -33,12 +33,12 @@ jobs:
       NCS_ROOT: /opt/ncs/${{ inputs.NCS_VERSION }}
 
     steps:
-      - name: Setup West workspace
-        run: |
-          west init -m https://github.com/$GITHUB_REPOSITORY .
-          west update --narrow -o=--depth=1
-          west zephyr-export
-          pip3 install -r deps/zephyr/scripts/requirements-base.txt
+      # - name: Setup West workspace
+      #   run: |
+      #     west init -m https://github.com/$GITHUB_REPOSITORY .
+      #     west update --narrow -o=--depth=1
+      #     west zephyr-export
+      #     pip3 install -r deps/zephyr/scripts/requirements-base.txt
 
       - name: Build with West
         run: |
