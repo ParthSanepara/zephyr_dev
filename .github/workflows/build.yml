@@ -44,8 +44,8 @@ jobs:
         run: |
           west build -b ${{ inputs.board }} . || exit 1
 
-      - name: Archive build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-artifacts-${{ inputs.ncs_version }}-${{ inputs.board }}
-          path: build/zephyr/bin/*
+      # - name: Archive build artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: build-artifacts-${{ inputs.ncs_version }}-${{ inputs.board }}
+      #     path: build/zephyr/bin/*
