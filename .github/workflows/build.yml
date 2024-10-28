@@ -1,7 +1,8 @@
 name: Build NRF Connect SDK Application
 
 on:
-  # ...
+  push:
+  pull_request:
   workflow_dispatch:
     inputs:
       ncs_version:
@@ -19,7 +20,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.6.2
+      image: ghcr.io/nrfconnect/sdk-nrf-toolchain:${{ inputs.ncs_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -30,10 +31,9 @@ jobs:
           export NRF_BASE=$PWD/nrf
           echo "ZEPHYR_BASE=$ZEPHYR_BASE" >> $GITHUB_ENV
           echo "NRF_BASE=$NRF_BASE" >> $GITHUB_ENV
-          
+
       - name: Install west
-        run: |
-          pip install west
+        run: pip install west
 
       - name: Update west
         run: |
@@ -43,8 +43,6 @@ jobs:
       - name: Build application
         run: |
           west build -b ${{ inputs.board }} . || exit 1
-
-
 
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
