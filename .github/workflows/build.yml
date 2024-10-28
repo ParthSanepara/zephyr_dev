@@ -8,7 +8,7 @@ on:
       ncs_version:
         description: "NCS SDK version (e.g., v2.6.2)"
         required: true
-        default: "v2.6.1"
+        default: "v2.6.2"
         type: string
       board:
         description: "Target board (e.g., nrf52dk_nrf52832)"
@@ -19,7 +19,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.6.1
+    container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.6.2
     defaults:
       run:
         # Bash shell is needed to set toolchain related environment variables in docker container
