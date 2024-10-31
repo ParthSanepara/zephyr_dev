@@ -1,26 +1,23 @@
 {
-  "image": "ghcr.io/silvio-vallorani-zephyr-portfolio/zephyr_container:arm-0.16.8sdk",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/app,type=bind",
-  "workspaceFolder": "/workspace",
-  "onCreateCommand": "west init -l app/ && west update --narrow -o=--depth=1 && west zephyr-export && pip install -r deps/zephyr/scripts/requirements-base.txt",
-  "mounts": [
-    "source=${localWorkspaceFolder}/.vscode/,target=/workspace/.vscode,type=bind,consistency=cached"
+  "name": "nRF Connect SDK Development Container",
+  "image": "ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.6.99",
+  "runArgs": [
+    "--cap-add=SYS_PTRACE",
+    "--security-opt",
+    "seccomp=unconfined"
   ],
-  "customizations": {
-    "vscode": {
-      "settings": {
-        // Hush CMake
-        "cmake.configureOnOpen": false,
-        // IntelliSense
-        "C_Cpp.default.compilerPath": "/opt/toolchains/zephyr-sdk-0.16.8/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc",
-        "C_Cpp.default.compileCommands": "build/compile_commands.json",
-        // File Associations
-        "files.associations": {}
-      },
-      "extensions": [
-        "ms-vscode.cpptools-extension-pack",
-        "ms-python.python"
-      ]
-    }
-  }
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "ms-vscode.cpptools",
+    "nrfconnect.nrf-terminal",
+    "nrfconnect.nrf-connect",
+    "ms-vscode.cmake-tools"
+  ],
+  "postCreateCommand": "/bin/bash -c 'export PATH=$PATH:${HOME}/.local/bin && west init -l zephyr_dev && west update -o=--depth=1 -n && apt-get -y update && apt-get -y install build-essential'",
+  "workspaceFolder": "/workspace/zephyr_dev",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "postStartCommand": "/bin/bash -c 'cd /workspace/zephyr_dev && west build --build-dir build . --pristine -DBOARD_ROOT=. -DNCS_TOOLCHAIN_VERSION=NONE -DCACHED_CONF_FILE=prj.conf --board nrf52dk_nrf52832'",
+  "remoteUser": "vscode"
 }
