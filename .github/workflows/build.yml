@@ -20,10 +20,10 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     container: ghcr.io/nrfconnect/sdk-nrf-toolchain:v2.6.2
-    defaults:
-      run:
-        # Bash shell is needed to set toolchain related environment variables in docker container
-        shell: bash
+    # defaults:
+    #   run:
+    #     # Bash shell is needed to set toolchain related environment variables in docker container
+    #     shell: bash
     steps:
       - name: Checkout repository with BLE Beacon application
         uses: actions/checkout@v4
